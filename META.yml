@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: CPAN-Metadata-RDF
-version: 1.00
+version: 1.10
 license: perl
 distribution_type: module
 requires:
@@ -19,5 +19,5 @@ conflicts: {}
 provides:
   CPAN::Metadata::RDF:
     file: lib/CPAN/Metadata/RDF.pm
-    version: 1.00
+    version: 1.10
 generated_by: Module::Build version 0.20

@@ -9,7 +9,9 @@ use File::Type;
 use Path::Class qw(file dir);
 use RDF::Simple::Serialiser;
 use vars qw($VERSION);
-$VERSION = "1.00";
+$VERSION = "1.10";
+
+my $CPANNS = "http://downlode.org/rdf/cpan/0.1";
 
 sub new {
   my $class = shift;
@@ -24,7 +26,6 @@ sub directory {
     $self->{DIR} = $dir;
 
     my $db = file($dir, "meta.db");
-#    my $dbh = DBI->connect("dbi:SQLite:dbname=$db","","", { RaiseError => 1, AutoCommit => 0});
     my $dbh = DBI->connect("dbi:SQLite:dbname=$db","","", { AutoCommit => 0});
     $self->{DBH} = $dbh;
 
@@ -131,12 +132,15 @@ id/
       my $mirrored = "0";
       $mirrored = "1" if exists $mirrored{$suffix};
 
+      my $beta = $self->is_beta($path) ? "developer" : "public";
+
       my $identifier = "http://search.cpan.org/dist/$distversion/";
 
 #      print "$cpanid: $file / $distversion / $dist / $version / $suffix / $datetime / $format / $filesize / $identifier\n";
 #      print "$cpanid: $file\n";
 
 # More meta:
+# http://downlode.org/rdf/cpan/0.1/
 # Title : main module name
 # Creator: author name / email address
 # Subject: the thing in the =name
@@ -147,18 +151,17 @@ id/
 # Relation:
 # Coverage:
 # Rights: license from meta.yml?
-# MD5 sum
-# Is currently on CPAN? <cpan:mirrored>1
 
-      $self->insert($identifier, "http://cpan.org/1.0/suffix", $suffix);
-      $self->insert($identifier, "http://cpan.org/1.0/distversion", $distversion);
-      $self->insert($identifier, "http://cpan.org/1.0/dist", $dist);
-      $self->insert($identifier, "http://cpan.org/1.0/version", $version);
-      $self->insert($identifier, "http://cpan.org/1.0/pauseid", $cpanid);
-      $self->insert($identifier, "http://cpan.org/1.0/distmd5", $distmd5);
-      $self->insert($identifier, "http://cpan.org/1.0/mimetype", $format);
-      $self->insert($identifier, "http://cpan.org/1.0/filesize", $filesize);
-      $self->insert($identifier, "http://cpan.org/1.0/mirrored", $mirrored);
+      $self->insert($identifier, "$CPANNS/suffix", $suffix);
+      $self->insert($identifier, "$CPANNS/dist_version", $distversion);
+      $self->insert($identifier, "$CPANNS/dist", $dist);
+      $self->insert($identifier, "$CPANNS/release_status", $beta);
+      $self->insert($identifier, "$CPANNS/version", $version);
+      $self->insert($identifier, "$CPANNS/pause_id", $cpanid);
+      $self->insert($identifier, "$CPANNS/dist_md5", $distmd5);
+      $self->insert($identifier, "$CPANNS/mimetype", $format);
+      $self->insert($identifier, "$CPANNS/file_size", $filesize);
+      $self->insert($identifier, "$CPANNS/mirrored", $mirrored);
       $self->insert($identifier, "http://purl.org/dc/elements/1.1/date", $datetime);
       $self->insert($identifier, "http://purl.org/dc/elements/1.1/type", "http://purl.org/dc/dcmitype/Software");
       $self->insert($identifier, "http://purl.org/dc/elements/1.1/publisher", "http://www.cpan.org/");
@@ -223,7 +226,7 @@ sub output {
   }
 
   my $rdf = $ser->serialise(@triples);
-  $rdf =~ s{http://cpan.org/1.0/}{cpan:}g;
+  $rdf =~ s{$CPANNS/}{cpan:}g;
   $dbh->disconnect;
   return $rdf;
 }
@@ -300,6 +303,39 @@ sub extract_name_version {
   return ($dist, $version);
 }
 
+# from TUCS, coded by gbarr
+sub is_beta {
+  my($self, $distfile) = @_;
+  my %info = ( beta => "0" );
+
+  $distfile =~ s,//+,/,g;
+
+  (my $path = $distfile) =~ s,^(((.*?/)?authors/)?id/)?./../,,;
+
+  if ($path =~ s,^((([^/])[^/])[^/]*)/,,) {
+    @info{qw(cpanid dir filename)} = ($1, "$3/$2/$1", $path);
+  }
+  else {
+    die("Cannot determine author from '$distfile'");
+    return;
+  }
+
+  ($info{distvname}) = $distfile =~ m,^.*/(.*)\.(?:tar\.gz|zip|tgz)$,i
+    or die("Cannot determine distvname from '$distfile'"), return;
+
+  @info{qw(dist version)} = $self->extract_name_version($info{distvname});
+
+  if ($info{distvname} =~ /^perl-?\d+\.(\d+)(?:\D(\d+))?(-(?:TRIAL|RC)\d+)?$/) {
+    $info{beta} = "1" if (($1 > 6 and $1 & 1) or ($2 and $2 >= 50)) or $3;
+  }
+  elsif (($info{version} || '') =~ /\d\D\d+_\d/) {
+    $info{beta} = "1";
+  }
+
+  return $info{beta};
+}
+
+
 __END__
 
 =head1 NAME
@@ -337,7 +373,11 @@ It requires a local CPAN mirror (for example, mirrored using
 mirrored using "/usr/bin/rsync -av --delete pause.perl.org::backpan
 /path/to/local/backpan/").
 
-It currently uses an SQLite database as a temporary datastore.
+It currently uses an SQLite database as a temporary datastore. It
+takes about two hours to generate the RDF file from scratch. I don't
+expect many people to run this module. I run it occasionally, and you
+should be able to fetch the latest version from:
+http://www.cpan.org/authors/id/L/LB/LBROCARD/cpan.rdf.gz
 
 =head1 AUTHOR
 

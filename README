@@ -30,7 +30,11 @@ DESCRIPTION
     mirrored using "/usr/bin/rsync -av --delete pause.perl.org::backpan
     /path/to/local/backpan/").
 
-    It currently uses an SQLite database as a temporary datastore.
+    It currently uses an SQLite database as a temporary datastore. It takes
+    about two hours to generate the RDF file from scratch. I don't expect
+    many people to run this module. I run it occasionally, and you should be
+    able to fetch the latest version from:
+    http://www.cpan.org/authors/id/L/LB/LBROCARD/cpan.rdf.gz
 
 AUTHOR
     Leon Brocard <leon@astray.com>
