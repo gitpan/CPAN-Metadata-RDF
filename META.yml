@@ -1,0 +1,23 @@
+--- #YAML:1.0
+name: CPAN-Metadata-RDF
+version: 1.00
+license: perl
+distribution_type: module
+requires:
+  DBD::SQLite: 0.01
+  DBI: 0.01
+  DateTime: 0.01
+  Digest::MD5: 0.01
+  File::Find::Rule: 0.01
+  File::Type: 0.01
+  Path::Class: 0.01
+  RDF::Simple::Serialiser: 0.01
+  Test::More: 0.01
+recommends: {}
+build_requires: {}
+conflicts: {}
+provides:
+  CPAN::Metadata::RDF:
+    file: lib/CPAN/Metadata/RDF.pm
+    version: 1.00
+generated_by: Module::Build version 0.20

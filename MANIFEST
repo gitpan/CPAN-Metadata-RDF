@@ -1,0 +1,5 @@
+Build.PL
+MANIFEST			This list of files
+META.yml
+README
+lib/CPAN/Metadata/RDF.pm
