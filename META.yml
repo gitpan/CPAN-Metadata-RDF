@@ -1,23 +1,22 @@
 --- #YAML:1.0
-name: CPAN-Metadata-RDF
-version: 1.10
-license: perl
-distribution_type: module
-requires:
-  DBD::SQLite: 0.01
-  DBI: 0.01
-  DateTime: 0.01
-  Digest::MD5: 0.01
-  File::Find::Rule: 0.01
-  File::Type: 0.01
-  Path::Class: 0.01
-  RDF::Simple::Serialiser: 0.01
-  Test::More: 0.01
-recommends: {}
-build_requires: {}
-conflicts: {}
-provides:
-  CPAN::Metadata::RDF:
-    file: lib/CPAN/Metadata/RDF.pm
-    version: 1.10
-generated_by: Module::Build version 0.20
+name:                CPAN-Metadata-RDF
+version:             1.11
+abstract:            Generate metadata about CPAN in RDF
+license:             perl
+author:              
+    - Leon Brocard <acme@astray.com>
+generated_by:        ExtUtils::MakeMaker version 6.44
+distribution_type:   module
+requires:     
+    DateTime:                      0.01
+    DBD::SQLite:                   0.01
+    DBI:                           0.01
+    Digest::MD5:                   0.01
+    File::Find::Rule:              0.01
+    File::Type:                    0.01
+    Path::Class:                   0.01
+    RDF::Simple::Serialiser:       0.01
+    Test::More:                    0.01
+meta-spec:
+    url:     http://module-build.sourceforge.net/META-spec-v1.3.html
+    version: 1.3

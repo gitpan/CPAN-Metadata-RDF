@@ -1,5 +1,6 @@
 package CPAN::Metadata::RDF;
 use strict;
+use warnings;
 use DateTime;
 use DBI;
 use Digest::MD5;
@@ -9,7 +10,7 @@ use File::Type;
 use Path::Class qw(file dir);
 use RDF::Simple::Serialiser;
 use vars qw($VERSION);
-$VERSION = "1.10";
+$VERSION = "1.11";
 
 my $CPANNS = "http://downlode.org/rdf/cpan/0.1";
 
